@@ -1,54 +1,80 @@
-// api.js
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3121/api';
-
-async function request(path, { method = 'GET', body = null, token } = {}) {
-  const url = `${API_BASE_URL}${path}`;
-  const headers = { };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  if (body) headers['Content-Type'] = 'application/json';
-
-  const response = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : null,
-  });
-
-  let payload;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
-
-  if (!response.ok) {
-    const error = new Error(
-      payload?.message ||
-      `Error ${response.status}: ${response.statusText}`
-    );
-    error.status = response.status;
-    error.payload = payload;
-    throw error;
-  }
-  return payload;
-}
-
-// productosAPI.js
-export const fetchProductsAPI = (token, userId) =>
-  request(`/productos/${userId}`, { token });
-
-export const addProductAPI = (token, userId, newProduct) =>
-  request('/productos', {
-    method: 'POST',
-    token,
-    body: { ...newProduct, id_usuario: userId },
-  });
-
-export const updateProductAPI = (token, { _id, ...product }) =>
-  request(`/productos/${_id}`, {
-    method: 'PUT',
-    token,
-    body: product,
-  });
-
-export const deleteProductAPI = (token, id) =>
-  request(`/productos/${id}`, { method: 'DELETE', token });
+export const fetchProductsAPI = async (token, userId) => {
+    try {
+      const response = await fetch(`http://localhost:3121/api/productos/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        console.error('Error al obtener productos');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return [];
+    }
+  };
+  
+  export const addProductAPI = async (token, userId, newProduct) => {
+    try {
+      const response = await fetch('http://localhost:3121/api/productos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...newProduct, id_usuario: userId })
+      });
+      if (response.ok) {
+        return true;
+      } else {
+        console.error('Error al añadir producto');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  };
+  
+  export const updateProductAPI = async (token, editingProduct) => {
+    try {
+      const response = await fetch(`http://localhost:3121/api/productos/${editingProduct._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editingProduct)
+      });
+      if (response.ok) {
+        return true;
+      } else {
+        console.error('Error al actualizar producto');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  };
+  
+  export const deleteProductAPI = async (token, id) => {
+    try {
+      const response = await fetch(`http://localhost:3121/api/productos/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        return true;
+      } else {
+        console.error('Error al eliminar producto');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  };
+  
