@@ -1,3 +1,4 @@
+// Defino la ruta del Modelo
 const Producto = require('../model/productModel');
 
 // Crear un producto
