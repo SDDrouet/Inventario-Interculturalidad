@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+    # Servicio de autenticación
+    mongodb-auth:
+        image: mongo
+        container_name: mongoAuthService
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo_data_auth:/data/db
+        networks:
+            - inventory-app-network
+
+    auth-service:
+        build: 
+            context: ./auth-service
+        container_name: authService
+        environment:
+            - MONGO_URI=mongodb://mongoAuthService:27017/microservicioAuth
+        ports:
+            - "3120:3120"
+        networks:
+            - inventory-app-network
+        depends_on:
+            - mongodb-auth
+
+    # Servicio de inventario
+    mongodb-inventory:
+        image: mongo
+        container_name: mongoInventoryService
+        ports:
+            - "27018:27017"
+        volumes:
+            - mongo_data_inventory:/data/db
+        networks:
+            - inventory-app-network
+
+    inventory-service:
+        build: 
+            context: ./inventory-service
+        container_name: inventoryService
+        environment:
+            - MONGO_URI=mongodb://mongoInventoryService:27017/inventario
+        ports:
+            - "3121:3120"
+        networks:
+            - inventory-app-network
+        depends_on:
+            - mongodb-inventory
+
+    # Servicio de cliente
+    client-app:
+        build:
+            context: ./client
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+        restart: unless-stopped
+        networks:
+            - inventory-app-network
+        depends_on:
+            - auth-service
+            - inventory-service
+
+networks:
+    inventory-app-network:
+        driver: bridge
+
+volumes:
+    mongo_data_auth:
+    mongo_data_inventory:

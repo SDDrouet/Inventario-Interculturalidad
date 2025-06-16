@@ -1,0 +1,21 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongoInventoryService
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  inventory-service:
+    build: .
+    container_name: inventoryService
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/inventario
+    ports:
+      - "3121:3120"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
