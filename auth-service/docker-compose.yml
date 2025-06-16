@@ -1,0 +1,21 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongoAuthService
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  auth-service:
+    build: .
+    container_name: authService
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/microservicioAuth
+    ports:
+      - "3120:3120"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
