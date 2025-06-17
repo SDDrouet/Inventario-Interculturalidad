@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s  # frecuencia de recolección
+
+scrape_configs:
+  - job_name: 'node'
+    static_configs:
+      - targets: 
+          - 'host.docker.internal:31200'  # auth-service
+          - 'host.docker.internal:31201'  # inventory-service
