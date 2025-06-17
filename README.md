@@ -77,4 +77,4 @@ Esta aplicación basada en microservicios permite la gestión de usuarios y de i
 
 Puedes consultar las reflexiones del equipo en el siguiente archivo:
 
-👉 [docs/COLABORACION.md](docs/COLLABORACION.md)
+👉 [docs/COLABORACION.md](docs/COLABORACION.md)
